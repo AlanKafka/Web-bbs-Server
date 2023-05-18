@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kafka.webbbs.mapper.ArticleMapper">
+    <resultMap id="ArticleMap" type="com.kafka.webbbs.model.entity.Article">
+        <id column="article_id" property="articleId"/>
+        <result column="label" property="label"/>
+        <result column="uid" property="uid"/>
+        <result column="userName" property="userName"/>
+        <result column="title" property="title"/>
+        <result column="cover" property="cover"/>
+        <result column="content" property="content"/>
+        <result column="markdown_content" property="markdownContent"/>
+        <result column="editor_type" property="editorType"/>
+        <result column="summary" property="summary"/>
+        <result column="post_time" property="postTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="read_count" property="readCount"/>
+        <result column="good_count" property="goodCount"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="top_type" property="topType"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap id="ArticleVoMap" type="com.kafka.webbbs.model.dto.article.ArticleVo">
+        <id column="article_id" property="articleId"/>
+        <result column="label" property="label"/>
+        <result column="userName" property="userName"/>
+        <result column="title" property="title"/>
+        <result column="cover" property="cover"/>
+        <result column="content" property="content"/>
+        <result column="markdown_content" property="markdownContent"/>
+        <result column="editor_type" property="editorType"/>
+        <result column="summary" property="summary"/>
+        <result column="post_time" property="postTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="read_count" property="readCount"/>
+        <result column="good_count" property="goodCount"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="top_type" property="topType"/>
+        <result column="status" property="status"/>
+        <association property="user" javaType="com.kafka.webbbs.model.entity.User">
+            <id column="uid" property="uid"></id>
+            <result column="userName" property="userName"></result>
+            <result column="userAvatar" property="userAvatar"></result>
+        </association>
+    </resultMap>
+    
+   
+    <select id="getAllArticleHome" resultMap="ArticleVoMap">
+        select article.*,user.userName,user.userAvatar  from article  left join user on article.uid = user.uid
+                                                            where article.status = 1 order by article.read_count desc;
+    </select>
+
+    <select id="getAllArticleHomeToTime" resultMap="ArticleVoMap">
+        select article.*,user.userName,user.userAvatar  from article  left join user on article.uid = user.uid
+        where article.status = 1 order by article.post_time desc;
+    </select>
+<!--    <select id="getArticleById" resultMap="ArticleMap">-->
+<!--       select article_id,uid,label,userName,title,content,post_time,read_count,-->
+<!--               good_count,comment_count,status from article where article_id=#{articleId} and status = 1;-->
+<!--    </select>-->
+
+    <select id="getArticleById" resultMap="ArticleVoMap">
+        select article.*,user.userName,user.userAvatar  from article  left join user on article.uid = user.uid
+        where article.status = 1 and article.article_id =#{articleId};
+    </select>
+    
+    
+    <select id="getAllArticleFront" resultMap="ArticleVoMap">
+        select article.*,user.userName,user.userAvatar  from article  left join user on article.uid = user.uid
+        where article.status = 1 and article.label=0  order by article.read_count desc;
+    </select>
+    <select id="getAllArticleFrontTime" resultMap="ArticleVoMap">
+        select article.*,user.userName,user.userAvatar  from article  left join user on article.uid = user.uid
+        where article.status = 1 and article.label=0  order by article.post_time desc;
+    </select>
+    <select id="getAllArticleBackend" resultMap="ArticleVoMap">
+        select article.*,user.userName,user.userAvatar  from article  left join user on article.uid = user.uid
+        where article.status = 1 and article.label=1  order by article.read_count desc;
+    </select>
+    <select id="getAllArticleBackendTime" resultMap="ArticleVoMap">
+        select article.*,user.userName,user.userAvatar  from article  left join user on article.uid = user.uid
+        where article.status = 1 and article.label=1  order by article.post_time desc;
+    </select>
+    <select id="getAllArticleOther" resultMap="ArticleVoMap">
+        select article.*,user.userName,user.userAvatar  from article  left join user on article.uid = user.uid
+        where article.status = 1 and article.label=-1  order by article.read_count desc;
+    </select>
+    <select id="getAllArticleOtherTime" resultMap="ArticleVoMap">
+        select article.*,user.userName,user.userAvatar  from article  left join user on article.uid = user.uid
+        where article.status = 1 and article.label=-1  order by article.post_time desc;
+    </select>
+
+    <insert id="addAtricleByuid" useGeneratedKeys="true" keyProperty="articleId">
+        insert into article values 
+                (#{articleId},#{uid},#{userName},#{title},#{label},null,#{content},#{markdownContent},#{editorType},
+                    #{summary},#{postTime},#{updateTime},#{readCount},#{goodCount},#{commentCount},#{status}
+                )
+    </insert>
+    <update id="updateReadCount">
+        update article set read_count = #{readCount} where article_id = #{articleId}
+    </update>
+
+   
+</mapper>
